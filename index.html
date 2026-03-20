@@ -2,17 +2,15 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Geolocalização</title>
+  <title>Geolocalização automática</title>
 </head>
 <body>
 
-  <h2>Obter localização</h2>
-  <button onclick="obterLocalizacao()">Clique para permitir localização</button>
-
-  <p id="resultado"></p>
+  <h2>Obtendo sua localização...</h2>
+  <p id="resultado">Aguardando permissão...</p>
 
   <script>
-    function obterLocalizacao() {
+    window.onload = function() {
       const resultado = document.getElementById("resultado");
 
       if (!navigator.geolocation) {
@@ -42,7 +40,7 @@
           }
         }
       );
-    }
+    };
   </script>
 
 </body>
